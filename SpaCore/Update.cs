@@ -57,7 +57,7 @@ namespace SpaCore
 
 
         protected int maxmigrate;            // max # of particles in mlist
-        protected  RanPark random;     // RNG for particle timestep moves
+        //protected  RanPark random;     // RNG for particle timestep moves
          
         protected int collide_react;         // 1 if any SurfCollide or React classes defined
         protected int nsc, nsr;               // copy of Collide/React data in Surf class
