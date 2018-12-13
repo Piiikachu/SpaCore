@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SpaCore": {
+      "commandName": "Project",
+      "commandLineArgs": "-in in.circle"
+    }
+  }
+}
