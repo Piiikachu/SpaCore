@@ -84,10 +84,11 @@ namespace SpaCore
             DumpMessage("create update:done.");
             particle = new Particle(this);
             DumpMessage("create particle:done.");
-            DumpMessage("createing domain");
             domain = new Domain(this);
-
+            DumpMessage("create domain:done.");
             grid = new Grid(this);
+            DumpMessage("create grid:done");
+            DumpMessage("creating surf.");
             surf = new Surf(this);
 
             collide = null;
