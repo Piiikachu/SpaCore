@@ -29,7 +29,7 @@ namespace SpaCore
 
         private enum TypeFlag
         {
-            INT,FLOAT,BIGINT
+            INT, FLOAT, BIGINT
         }
 
         private enum ComputeWhich
@@ -93,7 +93,7 @@ namespace SpaCore
 
             bool expand = false;
             string[] earg;
-            int nargnew =sparta.input.ExpandArgs(narg, arg, 0,out earg);
+            int nargnew = sparta.input.ExpandArgs(narg, arg, 0, out earg);
 
             if (earg != arg) expand = true;
             arg = earg;
@@ -110,9 +110,9 @@ namespace SpaCore
                 //todo: complete it
                 switch (arg[i])
                 {
-                    case "step":AddField("Step", ComputeStep, TypeFlag.INT);break;
+                    case "step": AddField("Step", ComputeStep, TypeFlag.INT); break;
                     case "cpu": AddField("CPU", ComputeCPU, TypeFlag.FLOAT); break;
-                    //case "step": AddField("Step", ComputeStep, TypeFlag.INT); break;
+                    case "np": AddField("Np", ComputeNp, TypeFlag.FLOAT); break;
                     default:
                         Console.WriteLine("complete stats->setfields,{0}", arg[i]);
                         break;
@@ -121,12 +121,17 @@ namespace SpaCore
 
         }
 
+        private void ComputeNp()
+        {
+            throw new NotImplementedException();
+        }
+
         private void ComputeCPU()
         {
             throw new NotImplementedException();
         }
 
-        private void AddField(string key,Fnptr func,TypeFlag typeFlag)
+        private void AddField(string key, Fnptr func, TypeFlag typeFlag)
         {
             keyword[nfield] = key;
             vfunc[nfield] = func;

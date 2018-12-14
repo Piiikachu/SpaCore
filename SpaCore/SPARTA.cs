@@ -96,8 +96,9 @@ namespace SpaCore
 
             modify = new Modify(this);
             DumpMessage("create modify:done");
-            DumpMessage("creating output.");
             output = new Output(this);
+            DumpMessage("create output:done");
+            DumpMessage("creating timer.");
             timer = new Timer(this);
 
         }
