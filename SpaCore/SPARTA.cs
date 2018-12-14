@@ -88,13 +88,15 @@ namespace SpaCore
             DumpMessage("create domain:done.");
             grid = new Grid(this);
             DumpMessage("create grid:done");
-            DumpMessage("creating surf.");
             surf = new Surf(this);
+            DumpMessage("create surf:done");
 
             collide = null;
             react = null;
 
             modify = new Modify(this);
+            DumpMessage("create modify:done");
+            DumpMessage("creating output.");
             output = new Output(this);
             timer = new Timer(this);
 
