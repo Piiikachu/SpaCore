@@ -66,7 +66,7 @@ namespace SpaCore
             }
         }
 
-        public Species species;
+        public List<Species> species;
         public int nspecies;
         public int maxvibmode;
 
@@ -207,6 +207,19 @@ namespace SpaCore
             wrandom = null;
 
             //copy = copymode = 0;
+        }
+
+        public int FindSpecies(string id)
+        {
+            for (int i = 0; i < nspecies; i++)
+            {
+                if (species[i].Equals(id))
+                {
+                    return i;
+                }
+                
+            }
+            return -1;
         }
 
         private void AddMixture(int narg, string[] arg)

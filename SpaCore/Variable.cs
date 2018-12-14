@@ -6,9 +6,19 @@ namespace SpaCore
 {
     public class Variable
     {
+        private SPARTA sparta;
+
+        enum precedence
+        {
+            DONE, ADD, SUBTRACT, MULTIPLY, DIVIDE, CARAT, MODULO, UNARY,
+            NOT
+        }
+
         public Variable(SPARTA sparta)
         {
             sparta.DumpMessage("init variable");
+            this.sparta = sparta;
+            
         }
     }
 }

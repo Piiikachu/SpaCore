@@ -81,8 +81,12 @@ namespace SpaCore
         private void Create()
         {
             update = new Update(this);
+            DumpMessage("create update:done.");
             particle = new Particle(this);
+            DumpMessage("create particle:done.");
+            DumpMessage("createing domain");
             domain = new Domain(this);
+
             grid = new Grid(this);
             surf = new Surf(this);
 
