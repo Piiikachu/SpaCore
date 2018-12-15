@@ -216,9 +216,20 @@ namespace SpaCore
 
             while (iarg < narg)
             {
-                sparta.DumpMessage("complete Mixture->params");
-                Console.WriteLine("arg:{0}", arg[iarg]);
-                iarg++;
+                switch (arg[iarg])
+                {
+                    case "vstream":
+                        if (iarg + 4 > narg) sparta.DumpError("Illegal mixture command");
+                        vstream_flag = 1;
+                        vstream_user[0] = double.Parse(arg[iarg + 1]);
+                        vstream_user[1] = double.Parse(arg[iarg + 2]);
+                        vstream_user[2] = double.Parse(arg[iarg + 3]);
+                        iarg += 4;
+                        break;
+                    default:
+                        sparta.DumpError(string.Format("complete Mixture->params arg:{0}", arg[iarg]));
+                        break;
+                }
             }
 
             if (deleteflag)
