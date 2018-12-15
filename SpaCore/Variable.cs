@@ -16,7 +16,6 @@ namespace SpaCore
 
         public Variable(SPARTA sparta)
         {
-            sparta.DumpMessage("init variable");
             this.sparta = sparta;
             
         }

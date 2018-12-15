@@ -81,26 +81,18 @@ namespace SpaCore
         private void Create()
         {
             update = new Update(this);
-            DumpMessage("create update:done.");
             particle = new Particle(this);
-            DumpMessage("create particle:done.");
             domain = new Domain(this);
-            DumpMessage("create domain:done.");
             grid = new Grid(this);
-            DumpMessage("create grid:done");
             surf = new Surf(this);
-            DumpMessage("create surf:done");
 
             collide = null;
             react = null;
 
             modify = new Modify(this);
-            DumpMessage("create modify:done");
             output = new Output(this);
-            DumpMessage("create output:done");
-            DumpMessage("creating timer.");
             timer = new Timer(this);
-
+            DumpMessage("create(): done.");
         }
     }
 }
