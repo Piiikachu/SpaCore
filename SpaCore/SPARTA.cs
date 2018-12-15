@@ -36,7 +36,8 @@ namespace SpaCore
         }
         public void DumpError(string message)
         {
-            DumpMessage(message);
+            DumpMessage("Error: "+message);
+            sw.Flush();
             throw new Exception(message);
         }
 

@@ -94,19 +94,40 @@ namespace SpaCore
 
         private void Allocate()
         {
-            species = new List<int>();
-            fraction = new List<double>();
-            fraction_flag = new List<int>();
-            fraction_user = new List<double>();
-            cummulative = new List<double>();
-            mix2group = new List<int>();
-            vscale = new List<double>();
+            if (species == null)
+            {
+                species = new List<int>();
+            }
+            if (fraction == null)
+            {
+                fraction = new List<double>();
+            }
+            if (fraction_flag == null)
+            {
+                fraction_flag = new List<int>();
+            }
+            if (fraction_user == null)
+            {
+                fraction_user = new List<double>();
+            }
+            if (cummulative == null)
+            {
+                cummulative = new List<double>();
+            }
+            if (mix2group == null)
+            {
+                mix2group = new List<int>();
+            }
+            if (vscale == null)
+            {
+                vscale = new List<double>();
+            }
 
         }
 
 
 
-        internal void Command(int narg, string[] arg)
+        public void Command(int narg, string[] arg)
         {
             if (narg < 1) sparta.DumpMessage("Illegal mixture command");
 
@@ -116,19 +137,24 @@ namespace SpaCore
             int iarg;
             for (iarg = 1; iarg < narg; iarg++)
             {
+                bool breakflag = false;
                 switch (arg[iarg])
                 {
-                    case "nrho": break;
-                    case "vstream": break;
-                    case "temp": break;
-                    case "trot": break;
-                    case "tvib": break;
-                    case "frac": break;
-                    case "group": break;
-                    case "copy": break;
-                    case "delete": break;
+                    case "nrho": breakflag = true; break;
+                    case "vstream": breakflag = true; break;
+                    case "temp": breakflag = true; break;
+                    case "trot": breakflag = true; break;
+                    case "tvib": breakflag = true; break;
+                    case "frac": breakflag = true; break;
+                    case "group": breakflag = true; break;
+                    case "copy": breakflag = true; break;
+                    case "delete": breakflag = true; break;
                     default:
                         break;
+                }
+                if (breakflag)
+                {
+                    break;
                 }
 
             }
@@ -136,9 +162,10 @@ namespace SpaCore
 
             // add_species() processes list of species
             // params() processes remaining optional keywords
-
+            string[] args = new string[narg - iarg];
+            Array.Copy(arg, iarg, args, 0, narg - iarg);
             AddSpecies(nsp, arg);
-            Params(narg - iarg, arg);
+            Params(narg - iarg, args);
 
             // if copy keyword was used, create a new mixture via add_mixture()
             // then invoke its copy() method, passing it this mixture
@@ -151,7 +178,7 @@ namespace SpaCore
             }
         }
 
-        internal void AddSpeciesDefault(string name)
+        public void AddSpeciesDefault(string name)
         {
             Particle particle = sparta.particle;
             int index = particle.FindSpecies(name);
@@ -167,7 +194,10 @@ namespace SpaCore
 
         private void AddGroup(string id)
         {
-            groups = new List<string>();
+            if (groups == null)
+            {
+                groups = new List<string>();
+            }
             groups.Add(id);
             ngroup++;
         }
@@ -252,7 +282,7 @@ namespace SpaCore
             for (i = 0; i < narg; i++)
             {
                 index = particle.FindSpecies(arg[i]);
-                if (index < 0) sparta.DumpMessage("Mixture species is not defined");
+                if (index < 0) sparta.DumpError(string.Format("Mixture species is not defined: arg {0}",arg[i]));
                 for (j = 0; j < nspecies; j++)
                     if (species[j] == index) break;
                 if (j < nspecies) active[j] = 1;

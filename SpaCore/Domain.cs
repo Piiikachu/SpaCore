@@ -133,7 +133,7 @@ namespace SpaCore
 
         public void PrintBox(string str)
         {
-            string format = string.Format("{0}orthogonal box = ({1} {2} {3}) to ({4} {5} {6})\n", str, boxlo[0], boxlo[1], boxlo[2], boxhi[0], boxhi[1], boxhi[2]);
+            string format = string.Format("{0}orthogonal box = ({1} {2} {3}) to ({4} {5} {6})", str, boxlo[0], boxlo[1], boxlo[2], boxhi[0], boxhi[1], boxhi[2]);
             sparta.DumpMessage(format);
         }
         public void SetInitialBox()

@@ -15,24 +15,29 @@ namespace SpaCore
         public int maxlocal;
 
 
-        public struct Species
+        public class Species
         {                                       // info on each particle species, read from file
-            public string id;    // species ID
-            public double molwt;               // molecular weight
-            public double mass;                // molecular mass
-            public double rotrel;              // species weight
-            public double vibrel;              // multiple of electron charge
-            public double vibtemp;             // inverse rotational relaxation number
-            public double specwt;              // rotational temperature(s)
-            public double charge;              // vibrational tempearture(s)
-            public int rotdof, vibdof;         // inverse vibrational relaxation number(s)
-            public int internaldof;            // vibrational mode degeneracies
-                                               // rotational/vibrational DOF
-                                               // # of rotational/vibrational temps/modes defined
-                                               // 1 if either rotdof or vibdof != 0
-                                               // 1 if species.vib file read for this species
-
-
+            public string id;            // species ID
+            public double molwt;           // molecular weight
+            public double mass;            // molecular mass
+            public double specwt;          // species weight
+            public double charge;          // multiple of electron charge
+            public double rotrel;          // inverse rotational relaxation number
+            public double[] rottemp;      // rotational temperature(s)
+            public double[] vibtemp;      // vibrational tempearture(s)
+            public double[] vibrel;       // inverse vibrational relaxation number(s)
+            public int[] vibdegen;        // vibrational mode degeneracies
+            public int rotdof, vibdof;      // rotational/vibrational DOF
+            public int nrottemp, nvibmode;  // # of rotational/vibrational temps/modes defined
+            public int internaldof;        // 1 if either rotdof or vibdof != 0
+            public int vibdiscrete_read;   // 1 if species.vib file read for this species
+            public Species()
+            {
+                rottemp = new double[3];
+                vibtemp = new double[4];
+                vibrel = new double[4];
+                vibdegen = new int[4];
+            }
         }
 
 
@@ -107,7 +112,7 @@ namespace SpaCore
                 nmixture++;
                 mixture.Add(new Mixture(sparta, arg[0]));
             }
-            mixture[imix].Command(arg.Length,arg);
+            mixture[imix].Command(arg.Length, arg);
         }
 
         public void AddSpecies(string[] arg)
@@ -121,7 +126,7 @@ namespace SpaCore
             // nfilespecies = # of species defined in file
             // filespecies = list of species defined in file
 
-            nfilespecies = maxfilespecies = 0;
+            nfile = maxfile = 0;
             try
             {
                 fp = new FileStream(arg[0], FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -138,6 +143,7 @@ namespace SpaCore
                 if (arg[iarg].Equals("air"))
                 {
                     sparta.DumpError("Particle->AddSpecies: complete air");
+
                 }
                 else
                 {
@@ -169,9 +175,9 @@ namespace SpaCore
                 for (j = 0; j < nspecies; j++)
                     if (names[i].Equals(species[j].id)) break;
                 if (j < nspecies) sparta.DumpError("Species ID is already defined");
-                for (j = 0; j < nfilespecies; j++)
+                for (j = 0; j < nfile; j++)
                     if (names[i].Equals(filespecies[j].id)) break;
-                if (j == nfilespecies)
+                if (j == nfile)
                     sparta.DumpError("Species ID does not appear in species file");
                 //memcpy(&species[nspecies], &filespecies[j], sizeof(Species));
                 species.Add(filespecies[j]);
@@ -188,7 +194,10 @@ namespace SpaCore
 
         private void GrowSpecies()
         {
-            species = new List<Species>();
+            if (species == null)
+            {
+                species = new List<Species>();
+            }
         }
 
         private void ReadSpeciesFile()
@@ -221,8 +230,8 @@ namespace SpaCore
                     sp.rotdof = int.Parse(words[3]);
                     sp.rotrel = double.Parse(words[4]);
                     sp.vibdof = int.Parse(words[5]);
-                    sp.vibrel = double.Parse(words[6]);
-                    sp.vibtemp = double.Parse(words[7]);
+                    sp.vibrel[0] = double.Parse(words[6]);
+                    sp.vibtemp[0] = double.Parse(words[7]);
                     sp.specwt = double.Parse(words[8]);
                     sp.charge = double.Parse(words[9]);
 
@@ -234,8 +243,32 @@ namespace SpaCore
                     {
                         sp.internaldof = 0;
                     }
+                    // error checks
+                    // NOTE: allow rotdof = 3 when implement rotate = DISCRETE
+
+                    if (sp.rotdof != 0 && sp.rotdof != 2)
+                        sparta.DumpError("Invalid rotational DOF in species file");
+                    //if (sp.rotdof != 0 && sp.rotdof != 2 && sp.rotdof != 3)
+                    //  error->all(FLERR,"Invalid rotational DOF in species file");
+
+                    if (sp.vibdof < 0 || sp.vibdof > 8 || sp.vibdof % 2 != 0)
+                        sparta.DumpError("Invalid vibrational DOF in species file");
+
+                    // initialize additional rotation/vibration fields
+                    // may be overwritten by rotfile or vibfile
+
+                    sp.nrottemp = 0;
+                    sp.nvibmode = sp.vibdof / 2;
+
+                    sp.rottemp[0] = sp.rottemp[1] = sp.rottemp[2] = 0.0;
+                    sp.vibtemp[1] = sp.vibtemp[2] = sp.vibtemp[3] = 0.0;
+                    sp.vibrel[1] = sp.vibrel[2] = sp.vibrel[3] = 0.0;
+                    sp.vibdegen[0] = sp.vibdegen[1] = sp.vibdegen[2] = sp.vibdegen[3] = 0;
+
+                    sp.vibdiscrete_read = 0;
+
                     filespecies.Add(sp);
-                    nfilespecies++;
+                    nfile++;
 
 
                 }
@@ -280,10 +313,8 @@ namespace SpaCore
         protected int maxspecies;           // max size of species list
 
         protected FileStream fp;                 // file pointer for species, rotation, vibration
-        int nfilespecies;         // # of species read from file
-        int maxfilespecies;       // max size of filespecies list
-        protected int nfile;                // # of species read from file
-        protected int maxfile;              // max size of file list
+        protected int nfile;         // # of species read from file
+        protected int maxfile;       // max size of filespecies list
 
         protected List<Species> filespecies;     // list of species read from file
         protected List<RotFile> filerot;         // list of species rotation info read from file
@@ -376,7 +407,7 @@ namespace SpaCore
         {
             for (int i = 0; i < nspecies; i++)
             {
-                if (species[i].Equals(id))
+                if (id.Equals(species[i].id))
                 {
                     return i;
                 }

@@ -89,7 +89,7 @@ namespace SpaCore
                 case "create_box": CreateBox(); done = true; break;
                 case "create_grid": CreateGrid(); done = true; break;
                 case "balance_grid": BalanceGrid(); done = true; break;
-                case "species":AddSpecies();done= true;break;
+                case "species": AddSpecies(); done = true; break;
                 case "mixture": AddMixture(); done = true; break;
                 default:
                     break;
@@ -185,7 +185,7 @@ namespace SpaCore
             args = new string[list.Count - 1];
             for (int i = 0; i < args.Length; i++)
             {
-                args[i] = list[i+1];
+                args[i] = list[i + 1];
             }
         }
     }
