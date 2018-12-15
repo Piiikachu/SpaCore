@@ -17,7 +17,7 @@ namespace SpaCore
 
         public bool box_exist;                    // 0 = not yet created, 1 = exists
         public int dimension;                    // 2,3
-        public int axisymmetric;                 // 1 for yes, 0 for no, only allowed in 2d
+        public bool axisymmetric;                 // 1 for yes, 0 for no, only allowed in 2d
         public int boundary_collision_check;  // flag for whether init() check is required
                                               // for assign of collision models to boundaries
 
@@ -56,7 +56,7 @@ namespace SpaCore
 
             box_exist = false;
             dimension = 3;
-            axisymmetric = 0;
+            axisymmetric = false;
             boundary_collision_check = 1;
 
             for (int i = 0; i < 6; i++) bflag[i] = bc.PERIODIC;
@@ -118,7 +118,7 @@ namespace SpaCore
 
             if (bflag[(int)bd.YLO] == bc.AXISYM)
             {
-                axisymmetric = 1;
+                axisymmetric = true;
                 if (bflag[(int)bd.YHI] == bc.PERIODIC)
                     sparta.DumpError("Y cannot be periodic for axi-symmetric");
             }
@@ -129,6 +129,23 @@ namespace SpaCore
                     if (bflag[m] != bc.PERIODIC || bflag[m + 1] != bc.PERIODIC)
                         sparta.DumpError("Both sides of boundary must be periodic");
                 }
+        }
+
+        public void PrintBox(string str)
+        {
+            string format = string.Format("{0}orthogonal box = ({1} {2} {3}) to ({4} {5} {6})\n", str, boxlo[0], boxlo[1], boxlo[2], boxhi[0], boxhi[1], boxhi[2]);
+            sparta.DumpMessage(format);
+        }
+        public void SetInitialBox()
+        {
+            if (boxlo[0] >= boxhi[0] || boxlo[1] >= boxhi[1] || boxlo[2] >= boxhi[2])
+                sparta.DumpError("Box bounds are invalid");
+        }
+        public void SetGlobalBox()
+        {
+            prd[0] = xprd = boxhi[0] - boxlo[0];
+            prd[1] = yprd = boxhi[1] - boxlo[1];
+            prd[2] = zprd = boxhi[2] - boxlo[2];
         }
     }
 }

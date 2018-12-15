@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -85,6 +86,9 @@ namespace SpaCore
                 case "dimension": Dimension(); done = true; break;
                 case "global": Global(); done = true; break;
                 case "boundary": Boundry(); done = true; break;
+                case "create_box": CreateBox(); done = true; break;
+                case "create_grid": CreateGrid(); done = true; break;
+                case "balance_grid": BalanceGrid(); done = true; break;
                 default:
                     break;
             }
@@ -92,6 +96,21 @@ namespace SpaCore
 
 
             return done;
+        }
+
+        private void BalanceGrid()
+        {
+            //new BalanceGrid(sparta).Command(args);
+        }
+
+        private void CreateGrid()
+        {
+            new CreateGrid(sparta).Command(args);
+        }
+
+        private void CreateBox()
+        {
+            new CreateBox(sparta).Command(args);
         }
 
         private void Boundry()
@@ -140,9 +159,22 @@ namespace SpaCore
         private void Parse(string str)
         {
             string[] commands = Regex.Split(str, @"\s+");
-            command = commands[0];
-            args = new string[commands.Length - 1];
-            Array.Copy(commands, 1, args, 0, args.Length);
+            List<string> list = new List<string>();
+            foreach (string s in commands)
+            {
+                if (string.IsNullOrWhiteSpace(s))
+                {
+                    continue;
+                }
+                list.Add(s);
+            }
+
+            command = list[0];
+            args = new string[list.Count - 1];
+            for (int i = 0; i < args.Length; i++)
+            {
+                args[i] = list[i+1];
+            }
         }
     }
 }
