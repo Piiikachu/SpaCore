@@ -3,13 +3,15 @@ using System.Collections.Generic;
 
 namespace SpaCore
 {
-    internal class CreateGrid
+    
+    public enum Order { XYZ, XZY, YXZ, YZX, ZXY, ZYX };
+    public enum Inside { ANY, ALL };
+    public class CreateGrid
     {
+        public enum Bstyle { NONE, LEVEL, STRIDE, CLUMP, BLOCK, RANDOM };
         private SPARTA sparta;
         private int dimension;
-        enum Bstyle { NONE, LEVEL, STRIDE, CLUMP, BLOCK, RANDOM };
-        enum Order { XYZ, XZY, YXZ, YZX, ZXY, ZYX };
-        enum Inside { ANY, ALL };
+        
         public CreateGrid(SPARTA sparta)
         {
             this.sparta = sparta;

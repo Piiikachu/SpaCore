@@ -6,7 +6,6 @@ namespace SpaCore
     public class Mixture
     {
         private SPARTA sparta;
-        private Particle particle;
         private string userid;
 
         public string id;                   // ID of mixture
@@ -16,7 +15,7 @@ namespace SpaCore
 
         public int ngroup;                 // # of defined groups
         public List<string> groups;              // group IDs
-        public int[] mix2group;             // m2g[i] = group that mixture species I is in
+        public List<int> mix2group;             // m2g[i] = group that mixture species I is in
 
         // global attributes
         public double nrho;                // number density
@@ -62,7 +61,7 @@ namespace SpaCore
         public Mixture(SPARTA sparta, string userid)
         {
             this.sparta = sparta;
-            particle = sparta.particle;
+            Particle particle = sparta.particle;
             this.userid = userid;
             vstream = new double[3];
             vstream_user = new double[3];
@@ -100,7 +99,7 @@ namespace SpaCore
             fraction_flag = new List<int>();
             fraction_user = new List<double>();
             cummulative = new List<double>();
-
+            mix2group = new List<int>();
             vscale = new List<double>();
 
         }
@@ -148,6 +147,27 @@ namespace SpaCore
                 //particle.add_mixture(1, &arg[iarg + copyarg]);
                 //particle.mixture[particle.nmixture - 1].copy(this);
             }
+        }
+
+        internal void AddSpeciesDefault(string name)
+        {
+            Particle particle = sparta.particle;
+            int index = particle.FindSpecies(name);
+            //if (nspecies == maxspecies) allocate();
+            species.Add(index);
+
+            if (all_default && ngroup == 0) AddGroup("all");
+            if (species_default) AddGroup(name);
+            mix2group.Add(ngroup - 1);
+
+            nspecies++;
+        }
+
+        private void AddGroup(string id)
+        {
+            groups = new List<string>();
+            groups.Add(id);
+            ngroup++;
         }
 
         private void Params(int narg, string[] arg)
@@ -212,6 +232,7 @@ namespace SpaCore
 
         private void AddSpecies(int narg, string[] arg)
         {
+            Particle particle = sparta.particle;
             int i, j, index;
 
             // activeflag = 1 if species are listed

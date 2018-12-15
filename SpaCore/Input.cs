@@ -89,6 +89,7 @@ namespace SpaCore
                 case "create_box": CreateBox(); done = true; break;
                 case "create_grid": CreateGrid(); done = true; break;
                 case "balance_grid": BalanceGrid(); done = true; break;
+                case "species":Species();done= true;break;
                 default:
                     break;
             }
@@ -98,9 +99,14 @@ namespace SpaCore
             return done;
         }
 
+        private void Species()
+        {
+            sparta.particle.AddSpecies(args);
+        }
+
         private void BalanceGrid()
         {
-            //new BalanceGrid(sparta).Command(args);
+            new BalanceGrid(sparta).Command(args);
         }
 
         private void CreateGrid()

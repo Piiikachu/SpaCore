@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SpaCore
 {
@@ -9,32 +10,29 @@ namespace SpaCore
     {
         public bool exist;
         public bool sorted;
+        public Int64 nglobal;
+        public int nlocal;
+        public int maxlocal;
 
-        public class Species
+
+        public struct Species
         {                                       // info on each particle species, read from file
-            public char[] id;    // species ID
-            public double molwt;           // molecular weight
-            public double mass;            // molecular mass
-            public double specwt;          // species weight
-            public double charge;          // multiple of electron charge
-            public double rotrel;          // inverse rotational relaxation number
-            public double[] rottemp;      // rotational temperature(s)
-            public double[] vibtemp;      // vibrational tempearture(s)
-            public double[] vibrel;      // inverse vibrational relaxation number(s)
-            public int[] vibdegen;      // vibrational mode degeneracies
-            public int rotdof, vibdof;      // rotational/vibrational DOF
-            public int nrottemp, nvibmode;  // # of rotational/vibrational temps/modes defined
-            public int internaldof;        // 1 if either rotdof or vibdof != 0
-            public int vibdiscrete_read;   // 1 if species.vib file read for this species
+            public string id;    // species ID
+            public double molwt;               // molecular weight
+            public double mass;                // molecular mass
+            public double rotrel;              // species weight
+            public double vibrel;              // multiple of electron charge
+            public double vibtemp;             // inverse rotational relaxation number
+            public double specwt;              // rotational temperature(s)
+            public double charge;              // vibrational tempearture(s)
+            public int rotdof, vibdof;         // inverse vibrational relaxation number(s)
+            public int internaldof;            // vibrational mode degeneracies
+                                               // rotational/vibrational DOF
+                                               // # of rotational/vibrational temps/modes defined
+                                               // 1 if either rotdof or vibdof != 0
+                                               // 1 if species.vib file read for this species
 
-            public Species()
-            {
-                id = new char[16];
-                rottemp = new double[3];
-                vibtemp = new double[4];
-                vibrel = new double[4];
-                vibdegen = new int[4];
-            }
+
         }
 
 
@@ -92,6 +90,139 @@ namespace SpaCore
             }
         }
 
+
+        public void AddSpecies(string[] arg)
+        {
+            int narg = arg.Length;
+            int i, j, n;
+            if (narg < 2)
+            {
+                sparta.DumpError("Illegal species command");
+            }
+            // nfilespecies = # of species defined in file
+            // filespecies = list of species defined in file
+
+            nfilespecies = maxfilespecies = 0;
+            try
+            {
+                fp = new FileStream(arg[0], FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            catch (FileNotFoundException e)
+            {
+                throw e;
+            }
+
+            ReadSpeciesFile();
+            int newspecies = 0;
+            for (int iarg = 1; iarg < narg; iarg++)
+            {
+                if (arg[iarg].Equals("air"))
+                {
+                    sparta.DumpError("Particle->AddSpecies: complete air");
+                }
+                else
+                {
+                    newspecies++;
+                }
+            }
+
+            string[] names = new string[newspecies];
+            newspecies = 0;
+            for (int iarg = 1; iarg < narg; iarg++)
+            {
+                if (arg[iarg].Equals("air"))
+                {
+                    sparta.DumpError("Particle->AddSpecies: complete air");
+                }
+                else
+                {
+                    names[newspecies++] = arg[iarg];
+                }
+            }
+
+            GrowSpecies();
+
+            int imix_all = FindMixture("all");
+            int imix_species = FindMixture("species");
+
+            for (i = 0; i < newspecies; i++)
+            {
+                for (j = 0; j < nspecies; j++)
+                    if (names[i].Equals(species[j].id)) break;
+                if (j < nspecies) sparta.DumpError("Species ID is already defined");
+                for (j = 0; j < nfilespecies; j++)
+                    if (names[i].Equals(filespecies[j].id)) break;
+                if (j == nfilespecies)
+                    sparta.DumpError("Species ID does not appear in species file");
+                //memcpy(&species[nspecies], &filespecies[j], sizeof(Species));
+                species.Add(filespecies[j]);
+                nspecies++;
+
+                mixture[imix_all].AddSpeciesDefault(species[nspecies - 1].id);
+                mixture[imix_species].AddSpeciesDefault(species[nspecies - 1].id);
+            }
+
+
+
+
+        }
+
+        private void GrowSpecies()
+        {
+            species = new List<Species>();
+        }
+
+        private void ReadSpeciesFile()
+        {
+            filespecies = new List<Species>();
+            using (StreamReader sr = new StreamReader(fp))
+            {
+                string str;
+                string[] words;
+                while ((str = sr.ReadLine()) != null)
+                {
+                    if (string.IsNullOrWhiteSpace(str))
+                    {
+                        continue;
+                    }
+                    if (str.StartsWith("#"))
+                    {
+                        continue;
+                    }
+                    words = Regex.Split(str, @"\s+");
+                    if (words.Length != 10)
+                    {
+                        sparta.DumpError("Incorrect line format in species file");
+                    }
+                    Species sp = new Species();
+                    sp.id = words[0];
+
+                    sp.molwt = double.Parse(words[1]);
+                    sp.mass = double.Parse(words[2]);
+                    sp.rotdof = int.Parse(words[3]);
+                    sp.rotrel = double.Parse(words[4]);
+                    sp.vibdof = int.Parse(words[5]);
+                    sp.vibrel = double.Parse(words[6]);
+                    sp.vibtemp = double.Parse(words[7]);
+                    sp.specwt = double.Parse(words[8]);
+                    sp.charge = double.Parse(words[9]);
+
+                    if (sp.rotdof > 0 || sp.vibdof > 0)
+                    {
+                        sp.internaldof = 1;
+                    }
+                    else
+                    {
+                        sp.internaldof = 0;
+                    }
+                    filespecies.Add(sp);
+                    nfilespecies++;
+
+
+                }
+            }
+        }
+
         public class OnePartRestart
         {
             int id;                 // particle ID
@@ -110,6 +241,16 @@ namespace SpaCore
             }
         }
 
+        public void Sort()
+        {
+            sorted = true;
+
+            if (maxsort < maxlocal)
+            {
+
+            }
+        }
+
         public OnePart particles;
 
         int[] next;                // index of next particle in each grid cell
@@ -120,12 +261,14 @@ namespace SpaCore
         protected int maxspecies;           // max size of species list
 
         protected FileStream fp;                 // file pointer for species, rotation, vibration
+        int nfilespecies;         // # of species read from file
+        int maxfilespecies;       // max size of filespecies list
         protected int nfile;                // # of species read from file
         protected int maxfile;              // max size of file list
 
-        protected Species filespecies;     // list of species read from file
-        protected RotFile filerot;         // list of species rotation info read from file
-        protected VibFile filevib;         // list of species vibration info read from file
+        protected List<Species> filespecies;     // list of species read from file
+        protected List<RotFile> filerot;         // list of species rotation info read from file
+        protected List<VibFile> filevib;         // list of species vibration info read from file
 
         protected RanPark wrandom;   // RNG for particle weighting
 
@@ -153,6 +296,7 @@ namespace SpaCore
 
 
         private SPARTA sparta;
+
         public Particle(SPARTA sparta)
         {
             this.sparta = sparta;
@@ -217,7 +361,7 @@ namespace SpaCore
                 {
                     return i;
                 }
-                
+
             }
             return -1;
         }
@@ -244,8 +388,8 @@ namespace SpaCore
 
         private int FindMixture(string id)
         {
-            
-            
+
+
             for (int i = 0; i < nmixture; i++)
                 if (string.Equals(id, mixture[i].id)) return i;
             return -1;

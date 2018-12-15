@@ -22,7 +22,7 @@ namespace SpaCore
         public int nsub;             // global count of split sub cells
         public int maxsurfpercell;   // max surf elements in one child cell
         public int maxlevel;         // max level of any child cell in grid, 0 = root
-        public int uniform;          // 1 if all child cells are at same level, else 0
+        public bool uniform;          // 1 if all child cells are at same level, else 0
         public int unx, uny, unz;      // if uniform, effective global Nx,Ny,Nz of finest grid
         public double cutoff;        // cutoff for ghost cells, -1.0 = infinite
         public double cell_epsilon;  // half of smallest cellside of any cell in any dim
