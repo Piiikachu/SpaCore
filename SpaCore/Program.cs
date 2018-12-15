@@ -9,7 +9,7 @@ namespace SpaCore
         {
             Console.WriteLine("Hello World!");
             SPARTA sparta = new SPARTA(args);
-            
+            sparta.input.File();
 
             sparta.sw.Flush();
             Console.ReadKey();

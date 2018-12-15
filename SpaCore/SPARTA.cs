@@ -34,7 +34,11 @@ namespace SpaCore
             sw.WriteLine(message);
             Console.WriteLine(message);
         }
-    
+        public void DumpError(string message)
+        {
+            DumpMessage(message);
+            throw new Exception(message);
+        }
 
         public SPARTA(string[] args)
         {

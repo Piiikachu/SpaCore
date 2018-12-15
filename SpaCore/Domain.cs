@@ -15,7 +15,7 @@ namespace SpaCore
 
         private SPARTA sparta;
 
-        public int box_exist;                    // 0 = not yet created, 1 = exists
+        public bool box_exist;                    // 0 = not yet created, 1 = exists
         public int dimension;                    // 2,3
         public int axisymmetric;                 // 1 for yes, 0 for no, only allowed in 2d
         public int boundary_collision_check;  // flag for whether init() check is required
@@ -54,7 +54,7 @@ namespace SpaCore
             surf_react = new int[6];
 
 
-            box_exist = 0;
+            box_exist = false;
             dimension = 3;
             axisymmetric = 0;
             boundary_collision_check = 1;
