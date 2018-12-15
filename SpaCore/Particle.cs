@@ -90,6 +90,25 @@ namespace SpaCore
             }
         }
 
+        public void AddMixture(string[] arg)
+        {
+            int narg = arg.Length;
+            if (narg < 1)
+            {
+                sparta.DumpError("Illegal mixture command");
+            }
+            // imix = index if mixture ID already exists
+            // else instantiate a new mixture
+
+            int imix = FindMixture(arg[0]);
+            if (imix < 0)
+            {
+                imix = nmixture;
+                nmixture++;
+                mixture.Add(new Mixture(sparta, arg[0]));
+            }
+            mixture[imix].Command(arg.Length,arg);
+        }
 
         public void AddSpecies(string[] arg)
         {

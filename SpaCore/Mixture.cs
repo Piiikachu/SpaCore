@@ -104,6 +104,8 @@ namespace SpaCore
 
         }
 
+
+
         internal void Command(int narg, string[] arg)
         {
             if (narg < 1) sparta.DumpMessage("Illegal mixture command");
@@ -259,8 +261,9 @@ namespace SpaCore
                     if (all_default || species_default)
                         sparta.DumpMessage("Cannot add new species to mixture all or species");
                     //if (nspecies == maxspecies) Allocate();
-                    active[nspecies] = 2;
-                    species[nspecies++] = index;
+                    active.Add(2);
+                    species.Add(index);
+                    nspecies++;
                 }
             }
         }
