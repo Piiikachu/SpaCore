@@ -75,5 +75,60 @@ namespace SpaCore
             regions = null;
             copy = copymode = 0;
         }
+
+        public void SetBoundry(string[] arg)
+        {
+            int narg = arg.Length;
+
+            if (box_exist)
+            {
+                sparta.DumpError("Boundary command after simulation box is defined");
+            }
+            if (narg != 3)
+            {
+                sparta.DumpError("Illegal boundary command");
+            }
+
+            char c;
+            int m = 0;
+            for (int idim = 0; idim < 3; idim++)
+                for (int iside = 0; iside < 2; iside++)
+                {
+                    if (iside == 0) c = arg[idim][0];
+                    else if (iside == 1 && arg[idim].Length == 1) c = arg[idim][0];
+                    else c = arg[idim][1];
+
+                    if (c == 'o') bflag[m] = bc.OUTFLOW;
+                    else if (c == 'p') bflag[m] = bc.PERIODIC;
+                    else if (c == 'r') bflag[m] = bc.REFLECT;
+                    else if (c == 's') bflag[m] = bc.SURFACE;
+                    else if (c == 'a') bflag[m] = bc.AXISYM;
+                    else sparta.DumpError("Illegal boundary command");
+
+                    surf_collide[m] = surf_react[m] = -1;
+                    m++;
+                }
+
+            if (dimension == 2 && (bflag[(int)bd.ZLO] != bc.PERIODIC || bflag[(int)bd.ZHI] != bc.PERIODIC))
+                sparta.DumpError("Z dimension must be periodic for 2d simulation");
+
+            if (bflag[(int)bd.XLO] == bc.AXISYM || bflag[(int)bd.XHI] == bc.AXISYM ||
+                bflag[(int)bd.YHI] == bc.AXISYM || bflag[(int)bd.ZLO] == bc.AXISYM || bflag[(int)bd.ZHI] == bc.AXISYM)
+                sparta.DumpError("Only ylo boundary can be axi-symmetric");
+
+            if (bflag[(int)bd.YLO] == bc.AXISYM)
+            {
+                axisymmetric = 1;
+                if (bflag[(int)bd.YHI] == bc.PERIODIC)
+                    sparta.DumpError("Y cannot be periodic for axi-symmetric");
+            }
+
+            for (m = 0; m < 6; m += 2)
+                if (bflag[m] == bc.PERIODIC || bflag[m + 1] == bc.PERIODIC)
+                {
+                    if (bflag[m] != bc.PERIODIC || bflag[m + 1] != bc.PERIODIC)
+                        sparta.DumpError("Both sides of boundary must be periodic");
+                }
+        }
     }
 }

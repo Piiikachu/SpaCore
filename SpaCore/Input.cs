@@ -10,7 +10,7 @@ namespace SpaCore
         private FileStream infile;
 
         private Variable variable;
-        
+
 
         public Input(SPARTA sparta)
         {
@@ -18,7 +18,7 @@ namespace SpaCore
 
             variable = new Variable(sparta);
             this.sparta = sparta;
-            
+
         }
 
         public int ExpandArgs(int narg, string[] arg, int mode, out string[] earg)
@@ -83,8 +83,8 @@ namespace SpaCore
             {
                 case "seed": Seed(); done = true; break;
                 case "dimension": Dimension(); done = true; break;
-                case "global":Global(); done = true; break;
-                //case "boundary": if (Seed()) done = true; break;
+                case "global": Global(); done = true; break;
+                case "boundary": Boundry(); done = true; break;
                 default:
                     break;
             }
@@ -92,6 +92,11 @@ namespace SpaCore
 
 
             return done;
+        }
+
+        private void Boundry()
+        {
+            sparta.domain.SetBoundry(args);
         }
 
         private void Global()
