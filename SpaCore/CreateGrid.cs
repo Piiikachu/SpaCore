@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SpaCore
 {
@@ -195,7 +196,46 @@ namespace SpaCore
                 }
                 level++;
 
+                switch (arg[iarg])
+                {
+                    //case "level"
+                    default:
+                        sparta.DumpError("CreateGrid->Command: complete this");
+                        break;
+                }
+
             }
+            List<Grid.ParentCell> pcells = grid.pcells;
+            int nparent = grid.nparent;
+            for (int i = 0; i < nparent; i++)
+            {
+                pcells[pcells[i].iparent].grandparent = 1;
+            }
+
+            if (bstyle==Bstyle.CLUMP||bstyle==Bstyle.BLOCK)
+            {
+                grid.clumped = true;
+            }
+            else
+            {
+                grid.clumped = false;
+            }
+
+            double time2 = Timer.getTime();
+            grid.SetupOwned();
+            grid.AcquireGhosts();
+            grid.FindNeighbors();
+            grid.CheckUniform();
+
+            double time3 = Timer.getTime();
+
+            double time_total = time3 - time1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Create {0} child grid cells\n", grid.ncell);
+            sb.AppendFormat("  parent cells = {0}\n", grid.nparent);
+            sb.AppendFormat("  CPU time = {0} secs\n", time_total);
+            //todo:continue
         }
 
         private bool CellInRegion(double[] lo, double[] hi, Region region, Inside inside)
