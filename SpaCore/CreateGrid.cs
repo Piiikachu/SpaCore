@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SpaCore
 {
-    
+
     public enum Order { XYZ, XZY, YXZ, YZX, ZXY, ZYX };
     public enum Inside { ANY, ALL };
     public class CreateGrid
@@ -12,7 +12,7 @@ namespace SpaCore
         public enum Bstyle { NONE, LEVEL, STRIDE, CLUMP, BLOCK, RANDOM };
         private SPARTA sparta;
         private int dimension;
-        
+
         public CreateGrid(SPARTA sparta)
         {
             this.sparta = sparta;
@@ -205,14 +205,14 @@ namespace SpaCore
                 }
 
             }
-            List<Grid.ParentCell> pcells = grid.pcells;
-            int nparent = grid.nparent;
-            for (int i = 0; i < nparent; i++)
+            List<Grid.ParentCell> pcells1 = grid.pcells;
+            int nparent1 = grid.nparent;
+            for (int i = 1; i < nparent1; i++)
             {
-                pcells[pcells[i].iparent].grandparent = 1;
+                pcells1[pcells1[i].iparent].grandparent = 1;
             }
 
-            if (bstyle==Bstyle.CLUMP||bstyle==Bstyle.BLOCK)
+            if (bstyle == Bstyle.CLUMP || bstyle == Bstyle.BLOCK)
             {
                 grid.clumped = true;
             }
@@ -235,6 +235,8 @@ namespace SpaCore
             sb.AppendFormat("Create {0} child grid cells\n", grid.ncell);
             sb.AppendFormat("  parent cells = {0}\n", grid.nparent);
             sb.AppendFormat("  CPU time = {0} secs\n", time_total);
+            sb.AppendFormat("  create/ghost percent = {0} {1}\n", 100.0 * (time2 - time1) / time_total, 100.0 * (time3 - time2) / time_total);
+            sparta.DumpMessage(sb.ToString());
             //todo:continue
         }
 

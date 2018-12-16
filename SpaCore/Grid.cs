@@ -140,7 +140,6 @@ namespace SpaCore
             XLO, XHI, YLO, YHI, ZLO, ZHI, INTERIOR
         }
 
-        public enum bc { PERIODIC, OUTFLOW, REFLECT, SURFACE, AXISYM };
 
         public enum rg { REGION_ALL, REGION_ONE, REGION_CENTER };      // same as Surf
 
@@ -214,6 +213,157 @@ namespace SpaCore
             copy = copymode = 0;
         }
 
+        public void CheckUniform()
+        {
+            // maxlevel = max level of any child cell in grid
+
+            maxlevel = 0;
+            foreach (ParentCell p in pcells)
+            {
+                maxlevel = Math.Max(maxlevel, p.level);
+            }
+            maxlevel++;
+
+            // grid is uniform only if parents of all child cells are at same level
+
+            int plevel = -1;
+            foreach (ChildCell c in cells)
+            {
+                plevel = Math.Max(plevel, pcells[c.iparent].level);
+            }
+
+
+            int all = plevel;
+
+            uniform = true;
+            foreach (ChildCell c in cells)
+            {
+                if (pcells[c.iparent].level!=all)
+                {
+                    uniform = false;
+                }
+            }
+            //todo:fix it first
+            if (all!=0)
+            {
+
+            }
+
+            if (uniform)
+            {
+                bool[] lflag = new bool[maxlevel];
+                for (int i = 0; i < maxlevel; i++) lflag[i] = false;
+
+                int level;
+                unx = uny = unz = 1;
+                foreach (ParentCell p in pcells)
+                {
+                    level = p.level;
+                    if (lflag[level])
+                    {
+                        continue;
+                    }
+                    lflag[level] = true;
+                    unx *= p.nx;
+                    uny *= p.ny;
+                    unz *= p.nz;
+                }
+
+            }
+        }
+
+        public void FindNeighbors()
+        {
+            if (!exist_ghost) return;
+            sparta.DumpError("Grid->FindNeighbors: exist ghost");
+            //int icell, index, nmask, boundary, periodic;
+            //int[] neigh;
+            //int id;
+            //double[] lo, hi;
+            double[] output = new double[3];
+            Domain domain = sparta.domain;
+            
+
+            int dim = domain.dimension;
+            bc[] bflag = domain.bflag;
+            double[] boxlo = domain.boxlo;
+            double[] boxhi = domain.boxhi;
+
+            // insure all cell IDs (owned, ghost, parent) are hashed
+
+            Rehash();
+
+            // set neigh flags and nmask for each owned and ghost child cell
+            // sub cells have same lo/hi as split cell, so their neigh info is the same
+
+
+            throw new NotImplementedException();
+        }
+
+        private void Rehash()
+        {
+            hash.Clear();
+            int icell = 0;
+            foreach (ChildCell c in cells)
+            {
+                if (c.nsplit <= 0)
+                {
+                    continue;
+                }
+                hash.Add(c.id, icell + 1);
+                icell++;
+            }
+            icell = 0;
+            foreach (ParentCell p in pcells)
+            {
+                hash.Add(p.id, -(icell + 1));
+                icell++;
+            }
+            hashfilled = true;
+        }
+
+        internal void AcquireGhosts()
+        {
+            if (cutoff < 0.0)
+            {
+                sparta.DumpMessage("Grid.AcquireGhost: cutoff <0.0");
+
+            }
+            else if (clumped)
+            {
+                sparta.DumpMessage("Grid.AcquireGhost: clumped");
+            }
+            else
+            {
+                sparta.DumpMessage("Grid.AcquireGhost: complete");
+
+            }
+        }
+
+        public void SetupOwned()
+        {
+            int demension = sparta.domain.dimension;
+            Int64 one = nlocal - nsublocal;
+            ncell = one;
+            one = nunsplitlocal = nlocal - nsplitlocal - nsublocal;
+            nunsplit = one;
+            nsplit = nsplitlocal;
+            nsub = nsublocal;
+            // set cell_epsilon to 1/2 the smallest dimension of any grid cell
+
+            double eps = double.MaxValue;
+            //todo:parallel
+            foreach (ChildCell c in cells)
+            {
+                eps = Math.Min(eps, c.hi[0] - c.lo[0]);
+                eps = Math.Min(eps, c.hi[1] - c.lo[1]);
+                if (demension == 3)
+                {
+                    eps = Math.Min(eps, c.hi[2] - c.lo[2]);
+                }
+            }
+            cell_epsilon = eps * 0.5;
+        }
 
         public class ParentCell
         {

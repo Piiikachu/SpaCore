@@ -4,6 +4,7 @@ using System.Text;
 
 namespace SpaCore
 {
+    public enum bc { PERIODIC, OUTFLOW, REFLECT, SURFACE, AXISYM };
     public class Domain
     {
         public enum bd
@@ -11,7 +12,7 @@ namespace SpaCore
             XLO, XHI, YLO, YHI, ZLO, ZHI, INTERIOR
         }
 
-        public enum bc { PERIODIC, OUTFLOW, REFLECT, SURFACE, AXISYM };
+        
 
         private SPARTA sparta;
 
