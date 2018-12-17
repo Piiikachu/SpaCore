@@ -183,6 +183,13 @@ namespace SpaCore
             }
         }
 
+        public void CheckWatertight2d(int nline)
+        {
+            //todo:Check if the 
+            //throw new NotImplementedException();
+            sparta.DumpMessage("Surf->CheckWatertight2d: this is the function that checks if the surf is closed");
+        }
+
         internal void SetupSurf()
         {
 

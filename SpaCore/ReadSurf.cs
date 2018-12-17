@@ -121,7 +121,7 @@ namespace SpaCore
                 extent[2, 1] = Math.Max(extent[2, 1], p.x[2]);
             }
 
-            double minlen, minarea;
+            double minlen=0, minarea=0;
             if (dim == 2)
             {
                 minlen = ShortestLine();
@@ -133,9 +133,17 @@ namespace SpaCore
 
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("  {0} {1} xlo xhi\n", extent[0, 0], extent[0, 1]);
-            sb.AppendFormat("  {0} {1} ylo yhi\n", extent[1, 0], extent[1, 1]);
-            sb.AppendFormat("  {0} {1} zlo zhi\n", extent[2, 0], extent[2, 1]);
+            sb.AppendFormat("  {0:G6} {1:G6} xlo xhi\n", extent[0, 0], extent[0, 1]);
+            sb.AppendFormat("  {0:G6} {1:G6} ylo yhi\n", extent[1, 0], extent[1, 1]);
+            sb.AppendFormat("  {0:G6} {1:G6} zlo zhi\n", extent[2, 0], extent[2, 1]);
+            if (dim==2)
+            {
+                sb.AppendFormat("  {0:G6} min line length\n", minlen);
+            }
+            else
+            {
+                sparta.DumpError("Readsurf->Command: complete dimension3");
+            }
             sparta.DumpMessage(sb.ToString());
 
             if (dim == 2)
@@ -209,10 +217,20 @@ namespace SpaCore
             if (dim==2)
             {
                 surf.CheckWatertight2d(nline);
+                CheckNeighborNorm2d();
             }
 
+            double time4 = Timer.getTime();
+            grid.SurftoGrid(true);
 
             throw new NotImplementedException();
+        }
+
+        private void CheckNeighborNorm2d()
+        {
+            sparta.DumpMessage("ReadSurf->CheckNeighborNorm2d: this is the function that checks if the surf is infinitely thin");
+
+            //throw new NotImplementedException();
         }
 
         private double ShortestLine()

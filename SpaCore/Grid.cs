@@ -166,6 +166,30 @@ namespace SpaCore
             throw new NotImplementedException();
         }
 
+        public void SurftoGrid(bool flag)
+        {
+            Domain domain = sparta.domain;
+            Surf surf = sparta.surf;
+            ChildCell c;
+            SplitInfo s;
+            Cut2d cut2D;
+
+            int dim = domain.dimension;
+            double[] slo = surf.bblo;
+            double[] shi = surf.bbhi;
+            if (dim==3)
+            {
+                sparta.DumpError("Grid->SurftoGrid: 3d");
+            }
+            cut2D = new Cut2d(sparta, domain.axisymmetric);
+
+
+
+
+
+            throw new NotImplementedException();
+        }
+
         // cell type = OUTSIDE/INSIDE/OVERLAP if entirely outside/inside surfs
         //   or has any overlap with surfs including grazing or touching
         // corner point = OUTSIDE/INSIDE (not OVERLAP) if outside/inside
