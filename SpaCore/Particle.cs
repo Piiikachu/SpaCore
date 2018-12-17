@@ -301,6 +301,7 @@ namespace SpaCore
             {
 
             }
+            throw new NotImplementedException();
         }
 
         public OnePart particles;

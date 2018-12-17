@@ -237,7 +237,7 @@ namespace SpaCore
             sb.AppendFormat("  CPU time = {0} secs\n", time_total);
             sb.AppendFormat("  create/ghost percent = {0} {1}\n", 100.0 * (time2 - time1) / time_total, 100.0 * (time3 - time2) / time_total);
             sparta.DumpMessage(sb.ToString());
-            //todo:continue
+            
         }
 
         private bool CellInRegion(double[] lo, double[] hi, Region region, Inside inside)

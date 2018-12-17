@@ -143,6 +143,29 @@ namespace SpaCore
 
         public enum rg { REGION_ALL, REGION_ONE, REGION_CENTER };      // same as Surf
 
+        internal void RemoveGhosts()
+        {
+            if (exist_ghost)
+            {
+                exist_ghost = false;
+                throw new NotImplementedException();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+
+        public void UnsetNeighbors()
+        {
+            if (!exist_ghost)
+            {
+                return;
+            }
+            throw new NotImplementedException();
+        }
+
         // cell type = OUTSIDE/INSIDE/OVERLAP if entirely outside/inside surfs
         //   or has any overlap with surfs including grazing or touching
         // corner point = OUTSIDE/INSIDE (not OVERLAP) if outside/inside
@@ -238,17 +261,16 @@ namespace SpaCore
             uniform = true;
             foreach (ChildCell c in cells)
             {
-                if (pcells[c.iparent].level!=all)
+                if (pcells[c.iparent].level != all)
                 {
                     uniform = false;
                 }
             }
-            //todo:fix it first
-            if (all!=0)
+            all = uniform ? 1 : 0;
+            if (all == 0)
             {
-
+                uniform = false;
             }
-
             if (uniform)
             {
                 bool[] lflag = new bool[maxlevel];
@@ -282,7 +304,7 @@ namespace SpaCore
             //double[] lo, hi;
             double[] output = new double[3];
             Domain domain = sparta.domain;
-            
+
 
             int dim = domain.dimension;
             bc[] bflag = domain.bflag;

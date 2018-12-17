@@ -162,17 +162,25 @@ namespace SpaCore
 
             // add_species() processes list of species
             // params() processes remaining optional keywords
-            string[] args = new string[narg - iarg];
-            Array.Copy(arg, iarg, args, 0, narg - iarg);
-            AddSpecies(nsp, arg);
-            Params(narg - iarg, args);
+            string[] arg1;
+            string[] arg2;
+            if (arg.Length > 1)
+            {
+                arg1 = new string[arg.Length - 1];
+                arg2 = new string[arg.Length - iarg];
+                Array.Copy(arg, 1, arg1, 0, arg1.Length);
+                Array.Copy(arg, iarg, arg2, 0, arg2.Length);
+                AddSpecies(nsp, arg1);
+                Params(narg - iarg, arg2);
+            }
+
 
             // if copy keyword was used, create a new mixture via add_mixture()
             // then invoke its copy() method, passing it this mixture
 
             if (copyflag)
             {
-                sparta.DumpMessage("copyflag");
+                sparta.DumpMessage("Mixture->Command: copyflag");
                 //particle.add_mixture(1, &arg[iarg + copyarg]);
                 //particle.mixture[particle.nmixture - 1].copy(this);
             }

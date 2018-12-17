@@ -68,7 +68,7 @@ namespace SpaCore
                         str = str.Substring(0, str.IndexOf("#"));
                     }
                     Parse(str);
-                    if (!ExcuteCommand())
+                    if (!ExecuteCommand())
                     {
                         sparta.DumpMessage(string.Format("Unknown Command:{0}", command));
                     }
@@ -77,7 +77,7 @@ namespace SpaCore
             }
         }
 
-        private bool ExcuteCommand()
+        private bool ExecuteCommand()
         {
             bool done = false;
             switch (command)
@@ -91,6 +91,7 @@ namespace SpaCore
                 case "balance_grid": BalanceGrid(); done = true; break;
                 case "species": AddSpecies(); done = true; break;
                 case "mixture": AddMixture(); done = true; break;
+                case "read_surf": ReadSurf(); done = true; break;
                 default:
                     break;
             }
@@ -98,6 +99,11 @@ namespace SpaCore
 
 
             return done;
+        }
+
+        private void ReadSurf()
+        {
+            new ReadSurf(sparta).Command(args);
         }
 
         private void AddMixture()
