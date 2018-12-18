@@ -102,8 +102,7 @@ namespace SpaCore
 
             unit_style = null;
 
-            //todo: setunit
-            //set_units("si");
+            SetUnit("si");
 
             fnum = 1.0;
             nrho = 1.0;
@@ -124,6 +123,27 @@ namespace SpaCore
 
             copymode = 0;
             this.sparta = sparta;
+        }
+
+        private void SetUnit(string str)
+        {
+            switch (str)
+            {
+                case "cgs":
+                    boltz = 1.3806488e-16;
+                    mvv2e = 1.0;
+                    dt = 1.0;
+                    break;
+                case "si":
+                    boltz = 1.3806488e-23;
+                    mvv2e = 1.0;
+                    dt = 1.0;
+                    break;
+                default:
+                    sparta.DumpError("Illegal units command");
+                    break;
+            }
+            unit_style = str;
         }
 
         public void Global(string[] arg)

@@ -213,7 +213,6 @@ namespace SpaCore
             grid.ClearSurf();
 
             double time3 = Timer.getTime();
-            //todo:continue
             if (dim==2)
             {
                 surf.CheckWatertight2d(nline);
@@ -221,6 +220,7 @@ namespace SpaCore
             }
 
             double time4 = Timer.getTime();
+            //todo:continue
             grid.SurftoGrid(true);
 
             throw new NotImplementedException();

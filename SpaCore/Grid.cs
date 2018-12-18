@@ -166,28 +166,32 @@ namespace SpaCore
             throw new NotImplementedException();
         }
 
-        public void SurftoGrid(bool flag)
+
+
+        private int BoxOverlap(double[] alo, double[] ahi, double[] blo, double[] bhi)
         {
-            Domain domain = sparta.domain;
-            Surf surf = sparta.surf;
-            ChildCell c;
-            SplitInfo s;
-            Cut2d cut2D;
+            double[] lo = new double[3], hi = new double[3];
+            BoxInsersect(alo, ahi, blo, bhi, ref lo, ref hi);
 
-            int dim = domain.dimension;
-            double[] slo = surf.bblo;
-            double[] shi = surf.bbhi;
-            if (dim==3)
-            {
-                sparta.DumpError("Grid->SurftoGrid: 3d");
-            }
-            cut2D = new Cut2d(sparta, domain.axisymmetric);
+            if (lo[0] > hi[0]) return 0;
+            if (lo[1] > hi[1]) return 0;
+            if (lo[2] > hi[2]) return 0;
 
+            if (lo[0] == hi[0]) return 2;
+            if (lo[1] == hi[1]) return 2;
+            if (lo[2] == hi[2]) return 2;
 
+            return 1;
+        }
 
-
-
-            throw new NotImplementedException();
+        private void BoxInsersect(double[] alo, double[] ahi, double[] blo, double[] bhi, ref double[] lo, ref double[] hi)
+        {
+            lo[0] = Math.Max(alo[0], blo[0]);
+            hi[0] = Math.Min(ahi[0], bhi[0]);
+            lo[1] = Math.Max(alo[1], blo[1]);
+            hi[1] = Math.Min(ahi[1], bhi[1]);
+            lo[2] = Math.Max(alo[2], blo[2]);
+            hi[2] = Math.Min(ahi[2], bhi[2]);
         }
 
         // cell type = OUTSIDE/INSIDE/OVERLAP if entirely outside/inside surfs

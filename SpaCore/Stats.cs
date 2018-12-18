@@ -107,7 +107,6 @@ namespace SpaCore
 
             for (int i = 0; i < nargnew; i++)
             {
-                //todo: complete it
                 switch (arg[i])
                 {
                     case "step": AddField("Step", ComputeStep, TypeFlag.INT); break;

@@ -83,6 +83,12 @@ namespace SpaCore
 
         public int pushflag;             // set to 1 to push surf pts near grid cell faces
         public double pushlo, pushhi;     // lo/hi ranges to push on
+
+        public double LineSize(int m)
+        {
+            return LineSize(lines[m].p1, lines[m].p2);
+        }
+
         public double pushvalue;         // new position to push to
         public Surf(SPARTA sparta)
         {
